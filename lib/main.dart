@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+import 'package:olx_mobx/stores/PageStore.dart';
 import 'package:parse_server_sdk/parse_server_sdk.dart';
 
 import 'screens/base/BaseScreen.dart';
@@ -6,7 +8,12 @@ import 'screens/base/BaseScreen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await inicializeParse();
+  setupLocators();
   runApp(MyApp());
+}
+
+void setupLocators() {
+  GetIt.I.registerSingleton(PageStore());
 }
 
 Future<void> inicializeParse() async {
@@ -29,10 +36,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'OLX',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.blue,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
+          primaryColor: Colors.purple,
+          scaffoldBackgroundColor: Colors.purple,
+          cursorColor: Colors.orange,
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+          appBarTheme: AppBarTheme(elevation: 0)),
       home: BaseScreen(),
     );
   }
