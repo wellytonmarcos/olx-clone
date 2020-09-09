@@ -1,10 +1,12 @@
 import 'package:brasil_fields/brasil_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:olx_mobx/screens/login/LoginScreen.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:olx_mobx/screens/signup/components/FieldTitle.dart';
+import 'package:olx_mobx/stores/SignUpStore.dart';
 
 class SingUpScreen extends StatelessWidget {
+  final SignUpStore signUpStore = SignUpStore();
   double spaceSizedBox = 12;
   @override
   Widget build(BuildContext context) {
@@ -33,13 +35,18 @@ class SingUpScreen extends StatelessWidget {
                       title: 'Apelido',
                       subtitle: 'Como aparecerá em seus anúncios',
                     ),
-                    TextField(
-                      decoration: InputDecoration(
-                        border: const OutlineInputBorder(),
-                        isDense: true,
-                        hintText: 'Ex: João S',
-                      ),
-                    ),
+                    Observer(builder: (_) {
+                      return TextField(
+                        enabled: !signUpStore.loading,
+                        decoration: InputDecoration(
+                          border: const OutlineInputBorder(),
+                          isDense: true,
+                          hintText: 'Ex: João S',
+                          errorText: signUpStore.nameError,
+                        ),
+                        onChanged: signUpStore.setName,
+                      );
+                    }),
                     SizedBox(
                       height: spaceSizedBox,
                     ),
@@ -47,15 +54,20 @@ class SingUpScreen extends StatelessWidget {
                       title: 'E-mail',
                       subtitle: 'Enviaremos um e-mail de confirmação',
                     ),
-                    TextField(
-                      decoration: InputDecoration(
-                        border: const OutlineInputBorder(),
-                        isDense: true,
-                        hintText: 'Ex: joao@gmail.com',
-                      ),
-                      keyboardType: TextInputType.emailAddress,
-                      autocorrect: false,
-                    ),
+                    Observer(builder: (_) {
+                      return TextField(
+                        enabled: !signUpStore.loading,
+                        decoration: InputDecoration(
+                          border: const OutlineInputBorder(),
+                          isDense: true,
+                          hintText: 'Ex: joao@gmail.com',
+                          errorText: signUpStore.emailError,
+                        ),
+                        onChanged: signUpStore.setEmail,
+                        keyboardType: TextInputType.emailAddress,
+                        autocorrect: false,
+                      );
+                    }),
                     SizedBox(
                       height: spaceSizedBox,
                     ),
@@ -63,18 +75,23 @@ class SingUpScreen extends StatelessWidget {
                       title: 'Celular',
                       subtitle: 'Proteja sua conta',
                     ),
-                    TextField(
-                      decoration: InputDecoration(
-                        border: const OutlineInputBorder(),
-                        isDense: true,
-                        hintText: 'Ex: (35) 99999-9999',
-                      ),
-                      keyboardType: TextInputType.phone,
-                      inputFormatters: [
-                        WhitelistingTextInputFormatter.digitsOnly,
-                        TelefoneInputFormatter()
-                      ],
-                    ),
+                    Observer(builder: (_) {
+                      return TextField(
+                        enabled: !signUpStore.loading,
+                        decoration: InputDecoration(
+                          border: const OutlineInputBorder(),
+                          isDense: true,
+                          hintText: 'Ex: (35) 99999-9999',
+                          errorText: signUpStore.phoneError,
+                        ),
+                        onChanged: signUpStore.setPhone,
+                        keyboardType: TextInputType.phone,
+                        inputFormatters: [
+                          WhitelistingTextInputFormatter.digitsOnly,
+                          TelefoneInputFormatter()
+                        ],
+                      );
+                    }),
                     SizedBox(
                       height: spaceSizedBox,
                     ),
@@ -82,13 +99,19 @@ class SingUpScreen extends StatelessWidget {
                       title: 'Senha',
                       subtitle: 'Digite sua senha',
                     ),
-                    TextField(
-                      decoration: InputDecoration(
-                        border: const OutlineInputBorder(),
-                        isDense: true,
-                        hintText: 'Ex: João S',
-                      ),
-                      obscureText: true,
+                    Observer(
+                      builder: (_) {
+                        return TextField(
+                          enabled: !signUpStore.loading,
+                          decoration: InputDecoration(
+                            border: const OutlineInputBorder(),
+                            isDense: true,
+                            errorText: signUpStore.passwordError,
+                          ),
+                          obscureText: true,
+                          onChanged: signUpStore.setPassword,
+                        );
+                      },
                     ),
                     SizedBox(
                       height: spaceSizedBox,
@@ -97,30 +120,45 @@ class SingUpScreen extends StatelessWidget {
                       title: 'Confirmar Senha',
                       subtitle: 'Repita sua senha.',
                     ),
-                    TextField(
-                      decoration: InputDecoration(
-                          border: const OutlineInputBorder(), isDense: true),
-                      obscureText: true,
-                    ),
+                    Observer(builder: (_) {
+                      return TextField(
+                        enabled: !signUpStore.loading,
+                        decoration: InputDecoration(
+                          border: const OutlineInputBorder(),
+                          isDense: true,
+                          errorText: signUpStore.confirmPasswordError,
+                        ),
+                        obscureText: true,
+                        onChanged: signUpStore.setConfirmPassword,
+                      );
+                    }),
                     SizedBox(
                       height: spaceSizedBox,
                     ),
-                    Container(
-                      height: 42,
-                      margin: const EdgeInsets.symmetric(vertical: 12),
-                      child: RaisedButton(
-                        onPressed: () {},
-                        color: Colors.orange,
-                        child: Text(
-                          'CADASTRAR',
-                          style: TextStyle(fontSize: 18),
+                    Observer(builder: (_) {
+                      return Container(
+                        height: 42,
+                        margin: const EdgeInsets.symmetric(vertical: 12),
+                        child: RaisedButton(
+                          color: Colors.orange,
+                          disabledColor: Colors.orange.withAlpha(120),
+                          child: signUpStore.loading
+                              ? CircularProgressIndicator(
+                                  valueColor:
+                                      AlwaysStoppedAnimation(Colors.white),
+                                )
+                              : Text(
+                                  'CADASTRAR',
+                                  style: TextStyle(fontSize: 18),
+                                ),
+                          textColor: Colors.white,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20)),
+                          onPressed: signUpStore.signUpPressed,
                         ),
-                        textColor: Colors.white,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20)),
-                      ),
-                    ),
+                      );
+                    }),
                     Divider(),
                     Padding(
                       padding:
