@@ -1,5 +1,7 @@
 import 'package:mobx/mobx.dart';
 import 'package:olx_mobx/helpers/extensions.dart';
+import 'package:olx_mobx/models/UserModel.dart';
+import 'package:olx_mobx/repositories/UserRepository.dart';
 part 'SignUpStore.g.dart';
 
 class SignUpStore = _SignUpStore with _$SignUpStore;
@@ -17,6 +19,8 @@ abstract class _SignUpStore with Store {
   String confirmPassword;
   @observable
   bool loading = false;
+  @observable
+  String error;
 
   @action
   void setName(String value) => name = value;
@@ -143,9 +147,14 @@ abstract class _SignUpStore with Store {
   @action
   Future<void> _signUp() async {
     loading = true;
-    print(loading);
-    await Future.delayed(Duration(seconds: 5));
+    final user =
+        User(name: name, email: email, phone: phone, password: password);
+
+    try {
+      final resultUser = await UserRepository().signUp(user);
+    } catch (e) {
+      error = e;
+    }
     loading = false;
-    print(loading);
   }
 }
