@@ -8,6 +8,7 @@ import 'package:olx_mobx/stores/SignUpStore.dart';
 
 class SingUpScreen extends StatelessWidget {
   final SignUpStore signUpStore = SignUpStore();
+
   double spaceSizedBox = 12;
   @override
   Widget build(BuildContext context) {
